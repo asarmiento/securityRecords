@@ -54,20 +54,40 @@ class DataDBHelper(context: Context) :
 
         db.insert(Tables.Users.TABLE_NAME,null,values)
     }
-    fun consultIdUser(email:String){
+
+    fun consultIdUser(email:String):MutableList<UserEntity> {
         Tables.Users.users.clear()
-        val columnas = arrayOf(Tables.Users.COLUMN_UUID,
-        Tables.Users.COLUMN_NAME,Tables.Users.COLUMN_CARD,Tables.Users.COLUMN_EMAIL,Tables.Users.COLUMN_TYPEUSER,
-        Tables.Users.COLUMN_EMPLOYEEID)
-        val i =    db.query(Tables.Users.TABLE_NAME,columnas, "${Tables.Users.COLUMN_EMAIL}=${email}",null,null,null,null)
+        val columnas = arrayOf(
+            Tables.Users.COLUMN_UUID,
+            Tables.Users.COLUMN_NAME,
+            Tables.Users.COLUMN_CARD,
+            Tables.Users.COLUMN_EMAIL,
+            Tables.Users.COLUMN_TYPEUSER,
+            Tables.Users.COLUMN_EMPLOYEEID
+        )
+        val i = db.query(
+            Tables.Users.TABLE_NAME,
+            columnas,
+            "${Tables.Users.COLUMN_CARD}=${email}",
+            null,
+            null,
+            null,
+            null
+        )
         if (i.moveToFirst()) {
             do {
                 Tables.Users.users.add(
-                    UserEntity(i.getColumnIndex(Tables.Users.COLUMN_NAME),i.getColumnIndex(Tables.Users.COLUMN_CARD),
-                        i.getColumnIndex(Tables.Users.COLUMN_EMAIL))
+                    UserEntity(
+                        i.getString(0), i.getString(1),
+                        i.getString(2), i.getString(3), i.getInt(4)
+                    )
                 )
-            }while (i.moveToNext())
+            } while (i.moveToNext())
+
+        }
+        return Tables.Users.users
     }
+
     fun insertRecord(record:List<RecordEntity>){
         values.put(Tables.Records.COLUMN_EMPLOYEEID,record[0].getEmployeeId())
         values.put(Tables.Records.COLUMN_COMMENTS,record[0].getComments())

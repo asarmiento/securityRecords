@@ -89,7 +89,8 @@ class LoginActivity : AppCompatActivity() {
                              response.getString("type_user").toString(),
                              response.getString("employee_id").toInt())
                          )
-                         if() {
+                         val user = dbInv?.consultIdUser(response.getString("card").toString())
+                         if(user.isNullOrEmpty()) {
                              dbInv?.insertUser(listUsers);
                          }
                          Log.i("Token: ", response.getString("token"))
