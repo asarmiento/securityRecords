@@ -35,24 +35,51 @@
         android:layout_marginBottom="30dp"
         android:text="TextView" />
 
+
+    <TextView
+        android:id="@+id/tvHello"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="30dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textSize="20dp" />
+<EditText
+    android:id="@+id/txtComment"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:hint="Comentario"
+    android:ems="10"
+    android:gravity="start|top"
+    android:inputType="textMultiLine"
+    >
+
+</EditText>
+
     <Button
         android:id="@+id/btndetectar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:background="@color/color_btnEntry"
         android:ems="13"
         android:gravity="center"
         android:onClick="clickButton"
         android:text="Registrar Entrada" />
+
     <Button
         android:id="@+id/btnOut"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:ems="13"
         android:layout_margin="10dp"
+        android:background="@color/color_btnOut"
+        android:ems="13"
         android:gravity="center"
-        android:visibility="invisible"
         android:onClick="clickButton"
-        android:text="Registrar Salida" />
+        android:text="Registrar Salida"
+        android:visibility="invisible" />
+
+
 </LinearLayout>

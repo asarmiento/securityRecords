@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="color_primary">#060669</color>
+    <color name="color_btnEntry">#195A0D</color>
+    <color name="color_btnOut">#87090D</color>
     <color name="color_primary_200">#0F0FB6</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
