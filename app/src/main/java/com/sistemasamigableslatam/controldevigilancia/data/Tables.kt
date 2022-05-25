@@ -22,13 +22,16 @@ class Tables {
 
     abstract class Records{
         companion object{
-            val UUID= "uuid"
+            val COLUMN_UUID= "uuid"
             val TABLE_NAME="records"
             val COLUMN_EMPLOYEEID="employee_id"
             val COLUMN_COMMENTS="comments"
             val COLUMN_DATE="date"
-            val COLUMN_ENTRYTIME= "entry_time"
-            val COLUMN_OUTTIME= "out_time"
+            val COLUMN_TIME= "time"
+            val COLUMN_LATITUD= "latitud"
+            val COLUMN_LONGITUD= "longitud"
+            val COLUMN_STATUS= "status"
+            val COLUMN_TYPE= "type"
             val records:MutableList<RecordEntity> = ArrayList()
         }
     }

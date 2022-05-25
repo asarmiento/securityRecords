@@ -17,24 +17,27 @@
         android:gravity="center"
         android:textStyle="bold"
         android:textSize="20dp"
-        android:text="Accediendo a la ubicación" />
+        android:text="Registro de Control Entrada y Salida del turno." />
+
+
 
     <TextView
-        android:id="@+id/lbllatitud"
+        android:id="@+id/tvLbllatitud"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
-        android:text="TextView" />
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:visibility="invisible" />
 
     <TextView
-        android:id="@+id/lbllongitud"
+        android:id="@+id/tvLbllongitud"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="30dp"
-        android:text="TextView" />
-
+        android:gravity="center"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        android:textColor="@color/black" />
 
     <TextView
         android:id="@+id/tvHello"
@@ -44,15 +47,31 @@
         android:layout_marginBottom="30dp"
         android:gravity="center"
         android:textStyle="bold"
+        android:textColor="@color/black"
         android:textSize="20dp" />
+    <TextView
+        android:id="@+id/tvNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="25dp"
+        android:layout_marginBottom="30dp"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="15dp" />
 <EditText
     android:id="@+id/txtComment"
     android:layout_width="match_parent"
     android:layout_height="250dp"
     android:hint="Comentario"
+    android:textColor="@color/black"
     android:ems="10"
     android:gravity="start|top"
+android:textStyle="normal"
+    android:layout_margin="2dp"
+    android:theme="@style/textArea"
     android:inputType="textMultiLine"
+
     >
 
 </EditText>
@@ -65,6 +84,7 @@
         android:background="@color/color_btnEntry"
         android:ems="13"
         android:gravity="center"
+        android:textColor="@color/white"
         android:onClick="clickButton"
         android:text="Registrar Entrada" />
 
@@ -77,8 +97,9 @@
         android:background="@color/color_btnOut"
         android:ems="13"
         android:gravity="center"
-        android:onClick="clickButton"
+        android:onClick="sendInfoOut"
         android:text="Registrar Salida"
+        android:textColor="@color/white"
         android:visibility="invisible" />
 
 

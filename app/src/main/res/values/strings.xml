@@ -2,5 +2,5 @@
     <string name="app_name">Control de Vigilancia</string>
     <string name="app_username">Correo Electrónico</string>
     <string name="app_password">Contraseña</string>
-    <string name="api_serve">https://registro.escnicol1905.ed.cr/api</string>
+    <string name="api_serve">https://register.sistemasamigableslatam.com/api</string>
 </resources>

@@ -79,10 +79,13 @@ class LoginActivity : AppCompatActivity() {
                  Log.i("Http: ", http.response.toString())
                  runOnUiThread {
                      val code = http.statusCode
+
+                     Log.i("responselogin: ",code.toString()+" -- "+http.response.toString())
                      if (code == 201 || code == 200) {
                          val response: JSONObject =  JSONObject(http.response)
                          val localStorage= LocalStorage(this)
-                         localStorage.setToken(response.getString("token"))
+
+                         localStorage.setToken(response.getString("token").toString())
                          listUsers.add(UserEntity(response.getString("name").toString(),
                              response.getString("email").toString(),
                              response.getString("card").toString(),

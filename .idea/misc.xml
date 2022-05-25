@@ -3,8 +3,10 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Anwar Sarmiento/AndroidStudioProjects/ControldeVigilancia/app/src/main/res/drawable/ic_logo.xml" value="0.2815" />
+        <entry key="..\:/Users/Anwar Sarmiento/AndroidStudioProjects/ControldeVigilancia/app/src/main/res/drawable/logo2.xml" value="0.2815" />
         <entry key="..\:/Users/Anwar Sarmiento/AndroidStudioProjects/ControldeVigilancia/app/src/main/res/layout/activity_login.xml" value="0.36666666666666664" />
-        <entry key="..\:/Users/Anwar Sarmiento/AndroidStudioProjects/ControldeVigilancia/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/Users/Anwar Sarmiento/AndroidStudioProjects/ControldeVigilancia/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/Anwar Sarmiento/AndroidStudioProjects/ControldeVigilancia/app/src/main/res/layout/layout_cidaas.xml" value="0.18697916666666667" />
         <entry key="..\:/Users/Anwar Sarmiento/AndroidStudioProjects/ControldeVigilancia/app/src/main/res/layout/layout_loading.xml" value="0.36666666666666664" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.14175724637681159" />

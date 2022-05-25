@@ -1,6 +1,7 @@
 package com.sistemasamigableslatam.controldevigilancia.data
 
 import android.content.Context
+import android.util.Log
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -37,12 +38,17 @@ class Http(var context: Context, private val url: String) {
             connection.requestMethod = method
             connection.setRequestProperty("Content-Type", "application/json")
             connection.setRequestProperty("Accept", "application/json")
-            if (token) {
-                connection.setRequestProperty("Autorization", "Bearer " + localStorage.token)
+
+            Log.i("si recibe token","Bearer " + localStorage.getToken())
+            if (localStorage.getToken() != null) {
+                Log.i("si recibe token","Bearer " + localStorage.getToken())
+                connection.setRequestProperty("Autorization", "Bearer " + localStorage.getToken())
             }
+            Log.i("send data",connection.toString())
             if (method != "GET") {
                 connection.doOutput = true
             }
+            Log.i(" data",data.toString())
             if (data != null) {
                 val os = connection.outputStream
                 os.write(data!!.toByteArray())

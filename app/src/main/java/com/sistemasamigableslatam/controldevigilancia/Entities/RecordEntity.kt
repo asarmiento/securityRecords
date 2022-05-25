@@ -7,23 +7,42 @@ import androidx.room.Entity
 class RecordEntity {
 
     private var uuid:Int=0
-    private var employeeId:Int=0
-    private var comments:String=""
-    private var date:String=""
-    private var entryTime:String=""
-    private var outTime:String=""
+    private var employeeId:Int
+    private var comments:String
+    private var date:String
+    private var latitud:Double
+    private var longitud:Double
+    private var time:String
+    private var status:Boolean= false
+    private var type:String
 
-    constructor(uuid:Int,employeeId:Int,comments:String,date:String,entryTime:String,outTime:String){
+    constructor(
+        uuid: Int,
+        employeeId: Int,
+        comments: String,
+        date: String,
+        time: String,
+        latitud: Double,
+        longitud: Double,
+        status: Boolean,
+        type: String
+    ){
         this.uuid=uuid
         this.employeeId=employeeId
         this.comments=comments
         this.date=date
-        this.entryTime=entryTime
-        this.outTime=outTime
+        this.time=time
+        this.status=status
+        this.latitud=latitud
+        this.longitud=longitud
+        this.type=type
     }
 
     fun getUuid():Int{
         return uuid
+    }
+    fun getStatus():Boolean{
+        return status
     }
 
     fun getEmployeeId():Int{
@@ -35,11 +54,18 @@ class RecordEntity {
     fun getDate():String{
         return date
     }
-    fun getEntryTime():String{
-        return entryTime
+
+    fun getTime():String{
+        return time
     }
 
-    fun getOutTime():String{
-        return outTime
+    fun getLatitud():Double{
+        return latitud
+    }
+    fun getLongitud():Double{
+        return longitud
+    }
+    fun getType():String{
+        return type
     }
 }
