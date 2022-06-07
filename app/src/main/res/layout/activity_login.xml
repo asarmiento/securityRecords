@@ -45,12 +45,13 @@
         android:gravity="center"
         android:text="v1.0 Creado por Sistemas Amigables Latinoamérica S.A."
         android:textSize="12dp"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button"
-        app:layout_constraintVertical_bias="0.529" />
+        app:layout_constraintVertical_bias="0.029" />
 
     <Button
         android:id="@+id/button"

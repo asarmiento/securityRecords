@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
         tvHello.text = "Bienvenido (a): ${userData[0].getName().toString()}"
         if (allPermissionsGranteGPS()) {
             mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-            leerubicacionactual()
+            leerubicacionactual("a")
         } else {
             ActivityCompat.requestPermissions(
                 this,
@@ -99,7 +99,7 @@ class MainActivity : AppCompatActivity() {
 
             if (allPermissionsGranteGPS()) {
                 mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-                leerubicacionactual()
+                leerubicacionactual("a")
                 sendInfoEntry()
             } else {
                 ActivityCompat.requestPermissions(
@@ -115,31 +115,48 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun sendInfoEntry() {
-        var comments: String = "n/a"
-        if (txtComment?.text.toString() != "") {
-            comments = txtComment?.text.toString()
+        try {
+
+
+            var comments: String = "n/a"
+            if (txtComment?.text.toString() != "") {
+                comments = txtComment?.text.toString()
+            }
+
+            Log.i("comentario: ", comments)
+            if (allPermissionsGranteGPS()) {
+                lbllatitud = findViewById(R.id.tvLbllatitud)
+                lbllongitud = findViewById(R.id.tvLbllongitud)
+
+                leerubicacionactual("1")
+             /*   var latitude = 0.0
+                if (lbllatitud.text.toString() != "") {
+                    latitude = lbllatitud.text.toString().toDouble()
+                }
+                var longitude = 0.0
+                if (lbllongitud.text.toString() != "") {
+                    longitude = lbllongitud.text.toString().toDouble()
+                }
+                recordData.add(
+                    RecordEntity(
+                        0,
+                        userData[0].getEmployeeId(),
+                        comments,
+                        date,
+                        timeEntry,
+                        latitude,
+                        longitude,
+                        false,
+                        "1"
+                    )
+                )*/
+            }
+
+          //  dbInv?.insertRecord(recordData)
+            txtComment?.text = null
+        } catch (e: JSONException) {
+            e.printStackTrace()
         }
-        lbllatitud = findViewById(R.id.tvLbllatitud)
-        lbllongitud = findViewById(R.id.tvLbllongitud)
-        leerubicacionactual()
-        Log.i("comentario: ", comments)
-        recordData.add(
-            RecordEntity(
-                0,
-                userData[0].getEmployeeId(),
-                comments,
-                date,
-                timeEntry,
-                lbllatitud.text.toString().toDouble(),
-                lbllongitud.text.toString().toDouble(),
-                false,
-                "1"
-            )
-        )
-
-        dbInv?.insertRecord(recordData)
-        txtComment?.text = null
-
     }
 
     fun sendInfoOut(view: View) {
@@ -148,30 +165,18 @@ class MainActivity : AppCompatActivity() {
             if (txtComment?.text.toString() != "") {
                 comments = txtComment?.text.toString()
             }
-            lbllatitud = findViewById(R.id.tvLbllatitud)
-            lbllongitud = findViewById(R.id.tvLbllongitud)
 
             Log.i("comentario: ", comments)
 
             if (allPermissionsGranteGPS()) {
+
+                lbllatitud = findViewById(R.id.tvLbllatitud)
+                lbllongitud = findViewById(R.id.tvLbllongitud)
+
+                leerubicacionactual("0")
                 mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-                leerubicacionactual()
 
-                recordData.add(
-                    RecordEntity(
-                        0,
-                        userData[0].getEmployeeId(),
-                        comments,
-                        date,
-                        timeEntry,
-                        lbllatitud.text.toString().toDouble(),
-                        lbllongitud.text.toString().toDouble(),
-                        false,
-                        "0"
-                    )
-                )
 
-                dbInv?.insertRecord(recordData)
                 txtComment?.text = ""
                 btnEntry.isVisible = true
                 btnOut.isVisible = false
@@ -267,7 +272,11 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun leerubicacionactual() {
+    private fun leerubicacionactual(type:String) {
+        var comments: String = "n/a"
+        if (txtComment?.text.toString() != "") {
+            comments = txtComment?.text.toString()
+        }
         if (checkPermissions()) {
             if (isLocationEnabled()) {
                 if (ActivityCompat.checkSelfPermission(
@@ -285,10 +294,28 @@ class MainActivity : AppCompatActivity() {
                         } else {
                             lbllatitud.text = location.latitude.toString()
                             lbllongitud.text = location.longitude.toString()
+                            if(type == "0" || type =="1"){
+                                recordData.add(
+                                    RecordEntity(
+                                        0,
+                                        userData[0].getEmployeeId(),
+                                        comments,
+                                        date,
+                                        timeEntry,
+                                        location.latitude.toString().toDouble(),
+                                        location.longitude.toString().toDouble(),
+                                        false,
+                                        type
+                                    )
+                                )
+                                dbInv?.insertRecord(recordData)
+                            }
                             Log.i(
                                 "ubicación1: ",
-                                "LATITUD = " + location.latitude.toString() + " LONGITUD = " + location.longitude.toString()
+                                "LATITUD = " + location.latitude.toString() + " LONGITUD = " + location.longitude.toString()+" === "+recordData.toString()
                             )
+
+
                         }
                     }
                 }
