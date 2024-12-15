@@ -3,4 +3,8 @@
     <string name="app_username">Correo Electrónico</string>
     <string name="app_password">Contraseña</string>
     <string name="api_serve">https://register.sistemasamigableslatam.com/api</string>
+    <string name="app_logo">Logo de la aplicación</string>
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="login">Iniciar Sesión</string>
 </resources>

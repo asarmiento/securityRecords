@@ -272,11 +272,10 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun leerubicacionactual(type:String) {
-        var comments: String = "n/a"
-        if (txtComment?.text.toString() != "") {
-            comments = txtComment?.text.toString()
-        }
+    @SuppressLint("MissingPermission")
+    private fun leerubicacionactual(type: String) {
+        val comments = txtComment?.text.toString().takeIf { it.isNotEmpty() } ?: "n/a"
+        
         if (checkPermissions()) {
             if (isLocationEnabled()) {
                 if (ActivityCompat.checkSelfPermission(
@@ -287,43 +286,57 @@ class MainActivity : AppCompatActivity() {
                         Manifest.permission.ACCESS_COARSE_LOCATION
                     ) == PackageManager.PERMISSION_GRANTED
                 ) {
-                    mFusedLocationClient.lastLocation.addOnCompleteListener(this) { task ->
-                        var location: Location? = task.result
-                        if (location == null) {
-                            requestNewLocationData()
-                        } else {
-                            lbllatitud.text = location.latitude.toString()
-                            lbllongitud.text = location.longitude.toString()
-                            if(type == "0" || type =="1"){
-                                recordData.add(
-                                    RecordEntity(
-                                        0,
-                                        userData[0].getEmployeeId(),
-                                        comments,
-                                        date,
-                                        timeEntry,
-                                        location.latitude.toString().toDouble(),
-                                        location.longitude.toString().toDouble(),
-                                        false,
-                                        type
+                    val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 0)
+                        .setWaitForAccurateLocation(true)
+                        .setMinUpdateIntervalMillis(0)
+                        .setMaxUpdates(1)
+                        .build()
+
+                    val locationCallback = object : LocationCallback() {
+                        override fun onLocationResult(result: LocationResult) {
+                            result.lastLocation?.let { location ->
+                                lbllatitud.text = location.latitude.toString()
+                                lbllongitud.text = location.longitude.toString()
+                                
+                                if (type == "0" || type == "1") {
+                                    recordData.add(
+                                        RecordEntity(
+                                            0,
+                                            userData[0].getEmployeeId(),
+                                            comments,
+                                            date,
+                                            timeEntry,
+                                            location.latitude,
+                                            location.longitude,
+                                            false,
+                                            type
+                                        )
                                     )
+                                    dbInv?.insertRecord(recordData)
+                                }
+                                
+                                Log.i(
+                                    "ubicación1",
+                                    "LATITUD = ${location.latitude} LONGITUD = ${location.longitude} === $recordData"
                                 )
-                                dbInv?.insertRecord(recordData)
+                                
+                                // Remover las actualizaciones después de obtener la ubicación
+                                mFusedLocationClient.removeLocationUpdates(this)
                             }
-                            Log.i(
-                                "ubicación1: ",
-                                "LATITUD = " + location.latitude.toString() + " LONGITUD = " + location.longitude.toString()+" === "+recordData.toString()
-                            )
-
-
                         }
                     }
+
+                    mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+                    mFusedLocationClient.requestLocationUpdates(
+                        locationRequest,
+                        locationCallback,
+                        Looper.getMainLooper()
+                    )
                 }
             } else {
                 Toast.makeText(this, "Activar ubicación", Toast.LENGTH_SHORT).show()
-                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(intent)
-                this.finish()
+                startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                finish()
             }
         } else {
             ActivityCompat.requestPermissions(
@@ -333,33 +346,6 @@ class MainActivity : AppCompatActivity() {
                     Manifest.permission.ACCESS_FINE_LOCATION
                 ),
                 PERMISSION_ID
-            )
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun requestNewLocationData() {
-        var mLocationRequest = LocationRequest()
-        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        mLocationRequest.interval = 0
-        mLocationRequest.fastestInterval = 0
-        mLocationRequest.numUpdates = 1
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-        mFusedLocationClient.requestLocationUpdates(
-            mLocationRequest,
-            mLocationCallBack,
-            Looper.myLooper()!!
-        )
-    }
-
-    private val mLocationCallBack = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            var mLastLocation: Location = locationResult.lastLocation
-            lbllatitud.text = mLastLocation.latitude.toString()
-            lbllongitud.text = mLastLocation.longitude.toString()
-            Log.i(
-                "ubicación2: ",
-                "LATITUD = " + mLastLocation.latitude.toString() + " LONGITUD = " + mLastLocation.longitude.toString()
             )
         }
     }
