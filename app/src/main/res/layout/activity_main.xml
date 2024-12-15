@@ -27,7 +27,6 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textStyle="bold"
-        android:textColor="@color/black"
         android:visibility="invisible" />
 
     <TextView
@@ -47,7 +46,6 @@
         android:layout_marginBottom="30dp"
         android:gravity="center"
         android:textStyle="bold"
-        android:textColor="@color/black"
         android:textSize="20dp" />
     <TextView
         android:id="@+id/tvNote"
@@ -57,14 +55,12 @@
         android:layout_marginBottom="30dp"
         android:gravity="center"
         android:textStyle="bold"
-        android:textColor="@color/black"
         android:textSize="15dp" />
 <EditText
     android:id="@+id/txtComment"
     android:layout_width="match_parent"
     android:layout_height="250dp"
     android:hint="Comentario"
-    android:textColor="@color/black"
     android:ems="10"
     android:gravity="start|top"
 android:textStyle="normal"
@@ -85,7 +81,6 @@ android:textStyle="normal"
         android:ems="13"
         android:gravity="center"
         android:textColor="@color/white"
-        android:onClick="clickButton"
         android:text="Registrar Entrada" />
 
     <Button
@@ -97,8 +92,7 @@ android:textStyle="normal"
         android:background="@color/color_btnOut"
         android:ems="13"
         android:gravity="center"
-        android:onClick="sendInfoOut"
-        android:text="Registrar Salida"
+        android:text="@string/registrar_salida"
         android:textColor="@color/white"
         android:visibility="invisible" />
 

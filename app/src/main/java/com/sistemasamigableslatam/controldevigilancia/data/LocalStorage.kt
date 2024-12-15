@@ -25,4 +25,8 @@ class LocalStorage(var context: Context) {
         sharedPreserences = context.getSharedPreferences("STOREAGE_LOGIN_API", Context.MODE_PRIVATE)
         editor = sharedPreserences.edit()
     }
+
+    fun clearToken() {
+        sharedPreserences.edit().remove("token").apply()
+    }
 }

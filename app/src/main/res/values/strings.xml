@@ -1,10 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Control de Vigilancia</string>
+    <string name="app_name">Control de Ingreso</string>
     <string name="app_username">Correo Electrónico</string>
     <string name="app_password">Contraseña</string>
-    <string name="api_serve">https://register.sistemasamigableslatam.com/api</string>
+    <string name="api_serve">https://api.friendlypayroll.net/api</string>
     <string name="app_logo">Logo de la aplicación</string>
     <string name="email">Correo electrónico</string>
     <string name="password">Contraseña</string>
     <string name="login">Iniciar Sesión</string>
+    <string name="error_required">Debe llenar este campo</string>
+    <string name="error_invalid_email">Correo electrónico inválido</string>
+    <string name="success_login">Inicio de sesión exitoso</string>
+    <string name="error_login">Error al iniciar sesión</string>
+    <string name="activate_location">Activar ubicación</string>
+    <string name="invalid_credentials">Correo electrónico o contraseña inválidos</string>
+    <string name="registrar_salida">Registrar Salida</string>
+    <string name="location_not_available">Ubicación no disponible</string>
+    <string name="location_error">Error al obtener la ubicación</string>
 </resources>

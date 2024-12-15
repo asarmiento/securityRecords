@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="LoginActivityTheme" parent="Theme.ControlDeVigilancia">
+        <!-- Personalizaciones específicas para LoginActivity si las hay -->
+    </style>
+
+    <style name="MainActivityTheme" parent="Theme.ControlDeVigilancia">
+        <!-- Personalizaciones específicas para MainActivity si las hay -->
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="textArea" parent="Theme.ControlDeVigilancia">
+        <item name="android:padding">8dp</item>
+        <item name="android:background">@color/color_primary_dark</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:gravity">top|start</item>
+        <item name="android:minHeight">100dp</item>
+        <item name="cornerRadius">3dp</item>
+    </style>
+</resources> 

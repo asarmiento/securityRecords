@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
@@ -49,11 +50,22 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        
+        // Verificar permisos de almacenamiento
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
+            if (checkStoragePermissions()) {
+                initializeDatabase()
+            } else {
+                requestStoragePermissions()
+            }
+        } else {
+            initializeDatabase()
+        }
+        
         val dateInv = getCurrentDateTime()
         date = dateInv.toString("yyyy-MM-dd")
         val dateInvTime = getCurrentDateTime()
         timeEntry = dateInvTime.toString("HH:mm:ss")
-
 
         tvHello = findViewById(R.id.tvHello)
         txtComment = findViewById(R.id.txtComment)
@@ -63,9 +75,8 @@ class MainActivity : AppCompatActivity() {
         lbllatitud = findViewById(R.id.tvLbllatitud)
         lbllongitud = findViewById(R.id.tvLbllongitud)
         tvNote.text = ""
-        dbInv = DataDBHelper(this)
 
-        userData = ArrayList(dbInv?.consultUser())
+        userData = dbInv?.consultUser() ?: mutableListOf()
 
         tvHello.text = "Bienvenido (a): ${userData[0].getName().toString()}"
         if (allPermissionsGranteGPS()) {
@@ -86,13 +97,22 @@ class MainActivity : AppCompatActivity() {
             btnEntry.isVisible = false
             btnOut.isVisible = true
         }
+
+        // Configurar click listeners
+        btnEntry.setOnClickListener {
+            clickButton()
+        }
+        
+        btnOut.setOnClickListener {
+            sendInfoOut()
+        }
     }
 
     private fun allPermissionsGranteGPS() = REQUIRED_PERMISSIONS_GPS.all {
         ContextCompat.checkSelfPermission(baseContext, it) == PackageManager.PERMISSION_GRANTED
     }
 
-    fun clickButton(view: View) {
+    fun clickButton() {
         if (validateComment()) {
             btnEntry.isVisible = false
             btnOut.isVisible = true
@@ -116,56 +136,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun sendInfoEntry() {
         try {
-
-
-            var comments: String = "n/a"
-            if (txtComment?.text.toString() != "") {
-                comments = txtComment?.text.toString()
-            }
-
+            val comments = txtComment.text.toString().takeIf { it.isNotEmpty() } ?: "n/a"
             Log.i("comentario: ", comments)
+
             if (allPermissionsGranteGPS()) {
                 lbllatitud = findViewById(R.id.tvLbllatitud)
                 lbllongitud = findViewById(R.id.tvLbllongitud)
-
                 leerubicacionactual("1")
-             /*   var latitude = 0.0
-                if (lbllatitud.text.toString() != "") {
-                    latitude = lbllatitud.text.toString().toDouble()
-                }
-                var longitude = 0.0
-                if (lbllongitud.text.toString() != "") {
-                    longitude = lbllongitud.text.toString().toDouble()
-                }
-                recordData.add(
-                    RecordEntity(
-                        0,
-                        userData[0].getEmployeeId(),
-                        comments,
-                        date,
-                        timeEntry,
-                        latitude,
-                        longitude,
-                        false,
-                        "1"
-                    )
-                )*/
             }
 
-          //  dbInv?.insertRecord(recordData)
-            txtComment?.text = null
+            txtComment.text = null
         } catch (e: JSONException) {
             e.printStackTrace()
         }
     }
 
-    fun sendInfoOut(view: View) {
+    fun sendInfoOut() {
         if (validateComment()) {
-            var comments: String = "n/a"
-            if (txtComment?.text.toString() != "") {
-                comments = txtComment?.text.toString()
-            }
-
+            val comments = txtComment.text.toString().takeIf { it.isNotEmpty() } ?: "n/a"
+            
             Log.i("comentario: ", comments)
 
             if (allPermissionsGranteGPS()) {
@@ -177,7 +166,7 @@ class MainActivity : AppCompatActivity() {
                 mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
 
-                txtComment?.text = ""
+                txtComment.text = null
                 btnEntry.isVisible = true
                 btnOut.isVisible = false
                 sendRecords()
@@ -223,44 +212,41 @@ class MainActivity : AppCompatActivity() {
         return params
     }
 
-    fun validateComment(): Boolean {
-
-        txtComment = findViewById(R.id.txtComment)
-        if (txtComment.text.toString() == "") {
+    private fun validateComment(): Boolean {
+        if (txtComment.text.toString().isEmpty()) {
             Toast.makeText(this, "Debe escribir algún comentario", Toast.LENGTH_LONG).show()
             return false
         }
         return true
     }
 
-    fun sendRecords() {
-
-        var params = sendParams()
+    private fun sendRecords() {
+        val params = sendParams()
         Log.i("UserPassword: ", params.toString())
         val data = params.toString()
         val url = getString(R.string.api_serve) + "/store-records"
         Log.i("Url: ", url)
+        
         Thread {
             val http = Http(this@MainActivity, url)
             http.setMethod("POST")
             http.setData(data)
             http.send()
-            // Log.i("Http: ", http.response.toString())
+            
             runOnUiThread {
                 val code = http.statusCode
                 if (code == 201 || code == 200) {
-                    //  val response: JSONObject =  JSONObject(http.response)
                     dbInv?.updateSendRecord()
                     Toast.makeText(
                         this@MainActivity,
                         "Se guardó con éxito los registros",
                         Toast.LENGTH_LONG
                     ).show()
-
                 } else if (code == 422) {
                     try {
                         val response = JSONObject(http.response)
-                        val msg = response.getString("message")
+                        val message = response.optString("message", getString(R.string.error_login))
+                        Toast.makeText(this@MainActivity, message, Toast.LENGTH_LONG).show()
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
@@ -269,58 +255,89 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }.start()
-
     }
 
     @SuppressLint("MissingPermission")
     private fun leerubicacionactual(type: String) {
-        val comments = txtComment?.text.toString().takeIf { it.isNotEmpty() } ?: "n/a"
+        val comments = txtComment.text.toString().takeIf { it.isNotEmpty() } ?: "n/a"
         
         if (checkPermissions()) {
             if (isLocationEnabled()) {
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 0)
+                try {
+                    val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000L)
                         .setWaitForAccurateLocation(true)
-                        .setMinUpdateIntervalMillis(0)
+                        .setMinUpdateIntervalMillis(2000L)
+                        .setMaxUpdateDelayMillis(10000L)
                         .setMaxUpdates(1)
                         .build()
 
                     val locationCallback = object : LocationCallback() {
                         override fun onLocationResult(result: LocationResult) {
                             result.lastLocation?.let { location ->
-                                lbllatitud.text = location.latitude.toString()
-                                lbllongitud.text = location.longitude.toString()
-                                
-                                if (type == "0" || type == "1") {
-                                    recordData.add(
-                                        RecordEntity(
-                                            0,
-                                            userData[0].getEmployeeId(),
-                                            comments,
-                                            date,
-                                            timeEntry,
-                                            location.latitude,
-                                            location.longitude,
-                                            false,
-                                            type
+                                try {
+                                    if (location.accuracy <= 20f) {
+                                        lbllatitud.text = location.latitude.toString()
+                                        lbllongitud.text = location.longitude.toString()
+                                        
+                                        if (type == "0" || type == "1") {
+                                            recordData.add(
+                                                RecordEntity(
+                                                    0,
+                                                    userData[0].getEmployeeId(),
+                                                    comments,
+                                                    date,
+                                                    timeEntry,
+                                                    location.latitude,
+                                                    location.longitude,
+                                                    false,
+                                                    type
+                                                )
+                                            )
+                                            dbInv?.insertRecord(recordData)
+                                        }
+                                        
+                                        Log.i(
+                                            "ubicación1",
+                                            "LATITUD = ${location.latitude} LONGITUD = ${location.longitude} PRECISIÓN = ${location.accuracy}m"
                                         )
-                                    )
-                                    dbInv?.insertRecord(recordData)
+                                    } else {
+                                        Log.w("MainActivity", "Ubicación no es lo suficientemente precisa: ${location.accuracy}m")
+                                        Toast.makeText(
+                                            this@MainActivity,
+                                            "Esperando mejor precisión de ubicación...",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        return
+                                    }
+                                } catch (e: Exception) {
+                                    Log.e("MainActivity", "Error processing location", e)
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        "Error al procesar la ubicación",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } finally {
+                                    mFusedLocationClient.removeLocationUpdates(this)
                                 }
-                                
-                                Log.i(
-                                    "ubicación1",
-                                    "LATITUD = ${location.latitude} LONGITUD = ${location.longitude} === $recordData"
-                                )
-                                
-                                // Remover las actualizaciones después de obtener la ubicación
+                            } ?: run {
+                                Log.e("MainActivity", "Location is null")
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    getString(R.string.location_not_available),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                mFusedLocationClient.removeLocationUpdates(this)
+                            }
+                        }
+
+                        override fun onLocationAvailability(availability: LocationAvailability) {
+                            if (!availability.isLocationAvailable) {
+                                Log.w("MainActivity", "Location is not available")
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    getString(R.string.location_not_available),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 mFusedLocationClient.removeLocationUpdates(this)
                             }
                         }
@@ -332,11 +349,17 @@ class MainActivity : AppCompatActivity() {
                         locationCallback,
                         Looper.getMainLooper()
                     )
+                } catch (e: Exception) {
+                    Log.e("MainActivity", "Error requesting location updates", e)
+                    Toast.makeText(
+                        this,
+                        getString(R.string.location_error),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } else {
-                Toast.makeText(this, "Activar ubicación", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, getString(R.string.activate_location), Toast.LENGTH_SHORT).show()
                 startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-                finish()
             }
         } else {
             ActivityCompat.requestPermissions(
@@ -382,11 +405,41 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
+    private fun checkStoragePermissions(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun requestStoragePermissions() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                Manifest.permission.READ_EXTERNAL_STORAGE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ),
+            STORAGE_PERMISSION_CODE
+        )
+    }
+
+    private fun initializeDatabase() {
+        try {
+            dbInv = DataDBHelper(applicationContext)
+            userData = dbInv?.consultUser() ?: mutableListOf()
+            // ... resto de la inicialización ...
+        } catch (e: Exception) {
+            Log.e("MainActivity", "Error initializing database", e)
+            Toast.makeText(this, "Error al inicializar la base de datos", Toast.LENGTH_LONG).show()
+        }
+    }
+
     companion object {
         private val REQUIRED_PERMISSIONS_GPS = arrayOf(
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.ACCESS_FINE_LOCATION
         )
+        private const val STORAGE_PERMISSION_CODE = 1001
     }
 
 }

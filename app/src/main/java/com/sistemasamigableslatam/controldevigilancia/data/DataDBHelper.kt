@@ -4,49 +4,65 @@ import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.util.Log
 import androidx.core.database.getBlobOrNull
 import com.sistemasamigableslatam.controldevigilancia.Entities.RecordEntity
 import com.sistemasamigableslatam.controldevigilancia.Entities.UserEntity
 
 class DataDBHelper(context: Context) :
-    SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
+    SQLiteOpenHelper(context.applicationContext, DATABASE_NAME, null, DATABASE_VERSION) {
 
-    private val db: SQLiteDatabase
-    private val values: ContentValues
+    private lateinit var db: SQLiteDatabase
+    private lateinit var values: ContentValues
 
     companion object {
-        private val DATABASE_VERSION = 1
-        private val DATABASE_NAME = "friendlypos"
+        private const val DATABASE_VERSION = 1
+        private const val DATABASE_NAME = "friendlypos"
     }
 
     init {
-        db = this.writableDatabase
-        values = ContentValues()
+        try {
+            context.applicationContext.getDatabasePath(DATABASE_NAME).parentFile?.apply {
+                if (!exists()) {
+                    mkdirs()
+                }
+            }
+            db = writableDatabase
+            values = ContentValues()
+        } catch (e: Exception) {
+            Log.e("DataDBHelper", "Error initializing database", e)
+        }
     }
 
-    override fun onCreate(db: SQLiteDatabase?) {
-        db!!.execSQL(
-            "CREATE TABLE " + Tables.Users.TABLE_NAME + " (" +
-                    Tables.Users.COLUMN_UUID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                    Tables.Users.COLUMN_NAME + " TEXT NOT NULL, " +
-                    Tables.Users.COLUMN_EMAIL + " TEXT NOT NULL, " +
-                    Tables.Users.COLUMN_CARD + " TEXT NOT NULL ," +
-                    Tables.Users.COLUMN_TYPEUSER + " TEXT NOT NULL ," +
-                    Tables.Users.COLUMN_EMPLOYEEID + " TEXT NOT NULL" +
-                    ");"
-        )
-        db!!.execSQL(
-            "CREATE TABLE " + Tables.Records.TABLE_NAME + " (" + Tables.Records.COLUMN_UUID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL ," +
-                    Tables.Records.COLUMN_EMPLOYEEID + " INTEGER NOT NULL ," +
-                    Tables.Records.COLUMN_COMMENTS + " TEXT NOT   NULL, " +
-                    Tables.Records.COLUMN_DATE + " TEXT NOT NULL, " +
-                    Tables.Records.COLUMN_TIME + " TEXT NOT NULL ," +
-                    Tables.Records.COLUMN_LATITUD + " REAL NOT  NULL ,"+
-                    Tables.Records.COLUMN_LONGITUD + " REAL NOT  NULL ,"+
-                    Tables.Records.COLUMN_TYPE + " TEXT NOT NULL,  "+
-                    Tables.Records.COLUMN_STATUS + " BOOLEAN  "
-                    + ");"
-        )
+    override fun onCreate(db: SQLiteDatabase) {
+        try {
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS ${Tables.Users.TABLE_NAME} (
+                    ${Tables.Users.COLUMN_UUID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    ${Tables.Users.COLUMN_NAME} TEXT NOT NULL,
+                    ${Tables.Users.COLUMN_EMAIL} TEXT NOT NULL,
+                    ${Tables.Users.COLUMN_CARD} TEXT NOT NULL,
+                    ${Tables.Users.COLUMN_TYPEUSER} TEXT NOT NULL,
+                    ${Tables.Users.COLUMN_EMPLOYEEID} TEXT NOT NULL
+                )
+            """.trimIndent())
+            
+            db.execSQL("""
+                CREATE TABLE IF NOT EXISTS ${Tables.Records.TABLE_NAME} (
+                    ${Tables.Records.COLUMN_UUID} INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    ${Tables.Records.COLUMN_EMPLOYEEID} INTEGER NOT NULL,
+                    ${Tables.Records.COLUMN_COMMENTS} TEXT NOT NULL,
+                    ${Tables.Records.COLUMN_DATE} TEXT NOT NULL,
+                    ${Tables.Records.COLUMN_TIME} TEXT NOT NULL,
+                    ${Tables.Records.COLUMN_LATITUD} REAL NOT NULL,
+                    ${Tables.Records.COLUMN_LONGITUD} REAL NOT NULL,
+                    ${Tables.Records.COLUMN_TYPE} TEXT NOT NULL,
+                    ${Tables.Records.COLUMN_STATUS} BOOLEAN
+                )
+            """.trimIndent())
+        } catch (e: Exception) {
+            Log.e("DataDBHelper", "Error creating database tables", e)
+        }
     }
 
     override fun onUpgrade(db: SQLiteDatabase?, oldVersion: Int, newVersion: Int) {
@@ -266,5 +282,11 @@ class DataDBHelper(context: Context) :
         values.put(Tables.Records.COLUMN_STATUS, true)
 
         db.update(Tables.Records.TABLE_NAME, values, "${Tables.Records.COLUMN_STATUS}=${0}", null)
+    }
+
+    fun clearUsers() {
+        val db = this.writableDatabase
+      //  db.delete(TABLE_USERS, null, null)
+        db.close()
     }
 }

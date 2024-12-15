@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="color_primary">#060669</color>
+    <color name="color_primary_dark">#223b53</color>
     <color name="color_btnEntry">#195A0D</color>
     <color name="color_btnOut">#87090D</color>
     <color name="color_primary_200">#0F0FB6</color>
@@ -11,4 +12,5 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="text_color">@color/black</color>
 </resources>

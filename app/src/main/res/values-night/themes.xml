@@ -2,8 +2,8 @@
     <!-- Base application theme. -->
     <style name="Theme.ControlDeVigilancia" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/color_primary</item>
-        <item name="colorPrimaryVariant">@color/color_primary</item>
+        <item name="colorPrimary">@color/color_primary_dark</item>
+        <item name="colorPrimaryVariant">@color/color_primary_dark</item>
         <item name="colorOnPrimary">@color/white</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/color_btnEntry</item>
@@ -11,9 +11,23 @@
         <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <!-- Text colors -->
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+        <item name="android:editTextColor">@color/white</item>
         <!-- Text input style -->
-        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
-        <!-- Customize your theme here. -->
-        <item name="actionButtonStyle">@color/color_btnEntry</item>
+        <item name="textInputStyle">@style/CustomTextInputLayout</item>
+    </style>
+
+    <!-- Estilo personalizado para TextInputLayout -->
+    <style name="CustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/white</item>
+        <item name="hintTextColor">@color/white</item>
+        <item name="android:textColorHint">@color/white</item>
+    </style>
+
+    <!-- Estilo para TextView en modo oscuro -->
+    <style name="TextViewStyle">
+        <item name="android:textColor">@color/white</item>
     </style>
 </resources>
